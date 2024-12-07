@@ -84,10 +84,9 @@ def check_paths(dataset_root, csv_path, remove=False, savelog=False):
         print("\n正在从CSV中删除缺失的条目...")
         # 创建一个布尔掩码，标记要保留的行
         mask = df[0].apply(lambda x: x.split(',')[0] in results['existing'])
-        # 保存新的CSV文件
-        new_csv_path = csv_path.rsplit('.', 1)[0] + '_cleaned.csv'
-        df[mask].to_csv(new_csv_path, header=False, index=False)
-        print(f"已创建清理后的CSV文件: {new_csv_path}")
+        # 直接覆盖原CSV文件
+        df[mask].to_csv(csv_path, header=False, index=False)
+        print(f"已更新原CSV文件: {csv_path}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='检查CSV文件中的视频路径是否存在')
