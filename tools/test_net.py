@@ -143,6 +143,7 @@ def perform_test(test_loader, model, test_meter, cfg, writer=None):
                 preds = model(inputs)
         # Gather all the predictions across all the devices to perform ensemble.
         if cfg.NUM_GPUS > 1:
+            print(f"Gathering predictions across {cfg.NUM_GPUS} GPUs...") # TOREMOVE
             preds, labels, video_idx = du.all_gather([preds, labels, video_idx])
             """
             if cfg.MODEL.RECORD_ROUTING:

@@ -37,6 +37,7 @@ class TemporalClipVideo(nn.Module):
             comments of the config file.
         """
         super(TemporalClipVideo, self).__init__()
+        print("Entering OpenVCLIP Temporal Model Initialization...") # TOREMOVE
         self.cfg = cfg
         self.num_pathways = 1
         
@@ -123,6 +124,7 @@ class TemporalClipVideo(nn.Module):
 
     def _construct_network(self, cfg):
 
+        print(f"Constructing OpenVCLIP Temporal Model Network... Arch: {cfg.MODEL.ARCH}") # TOREMOVE
         context_length = cfg.MODEL.CONTEXT_LENGTH
         if cfg.MODEL.ARCH == 'vitb32':
             self.model, self.preprocess = load("ViT-B/32", jit=False, 
@@ -188,7 +190,7 @@ class TemporalClipVideo(nn.Module):
 
     def forward(self, x=None, update=False):
         # shape of x(input) is (bz, channel, clip_len, h, w)
-
+        print(f"Entering OpenVCLIP Temporal Model Forward Pass... Input x type: {type(x)},len:{len(x)},x[0]shape: {x[0].shape}") # TOREMOVE   
         assert len(x) == self.num_pathways
         x = x[0]
         if len(x.shape) == 4:
@@ -203,11 +205,14 @@ class TemporalClipVideo(nn.Module):
         x = x.permute(0, 2, 1, 3, 4)
         x = x.reshape(bz*clip_len, channel_dim, h, w)
          
-        if self.record_routing:
+        # print(f"x Entering model.encode_image(x),before:x shape: {x.shape}")# TOREMOVE
+        if self.record_routing: #这个默认是关闭的
+            # print("In TemporalClipVideo Forward Pass, record_routing is True")# TOREMOVE
             img_encode, routing_state = self.model.encode_image(x)
         else:
             img_encode = self.model.encode_image(x)        
-         
+        # print(f"after model.encode_image(x), x shape: {x.shape}")# TOREMOVE
+        # print(f"after model.encode_image(x), img_encode shape: {img_encode.shape}")# TOREMOVE
         if self.training:
             # img encode [bz, feat_size]
             # text_dict  {id: [400, feat_size]},
